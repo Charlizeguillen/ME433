@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
-//#include "hardware/adc.h"
+#include "hardware/adc.h"
 #include "pico/time.h"
 #include "ssd1306.h"
 #include "font.h"
@@ -60,8 +60,16 @@ int main() {
     int state = 0;
 
     //for strin message (pt. 3)
-    int i = 15;
-    char message[50];
+    //int i = 15;
+    //char message[50];
+
+    // init ADC for reading potentiometer value (pt. 4)
+    adc_init();
+    adc_gpio_init(26);   // ADC0 = GPIO26
+    adc_select_input(0);
+    char msg[50];
+    char fpsmsg[50]; 
+    unsigned int t_old = to_us_since_boot(get_absolute_time());  
 
     while (1) {
         //blink pico led 
@@ -83,13 +91,30 @@ int main() {
         //ssd1306_update();
 
         //-----draw string (pt. 3)-----
-        sprintf(message, "Hello %d", i);  // create message with changing number
+        //sprintf(message, "Hello %d", i);  // create message with changing number
+        //ssd1306_clear();
+        //drawString(10, 10, message);  // draw the message on the OLED
+        //ssd1306_update();
+        //sleep_ms(500);
+        //gpio_put(25, 0);
+
+        //-----read ADC and display (pt. 4)-----   
+        uint16_t adc_value = adc_read();  // read potentiometer value (0-4095)
+        float voltage = adc_value * 3.3f / 4095.0f;  // convert to voltage
+
+        //FPS calc
+        unsigned int t_new = to_us_since_boot(get_absolute_time());
+        float fps = 1000000.0f / (t_new - t_old);
+        t_old = t_new;
+
+        //Text to display
+        sprintf(msg, "ADC: %.2f", voltage);
+        sprintf(fpsmsg, "FPS: %.1f", fps);
+
         ssd1306_clear();
-        drawString(10, 10, message);  // draw the message on the OLED
+        drawString(0, 0, msg);  // draw ADC value
+        drawString(0, 24, fpsmsg); // draw FPS
         ssd1306_update();
-        sleep_ms(500);
-        gpio_put(25, 0);
-        
-        sleep_ms(500);
+        sleep_ms(100);
     }
 }
