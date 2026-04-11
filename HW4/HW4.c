@@ -30,6 +30,15 @@ void drawChar(unsigned char x, unsigned char y, char c) {
     }
 }
 
+//function to draw string at (x,y) using drawChar (pt. 3)
+void drawString(unsigned char x, unsigned char y, char *message) {
+    int i = 0;
+
+    while (message[i] != '\0') {
+        drawChar(x + i * 6, y, message[i]);  // move right each letter
+        i++;
+    }
+}
 
 int main() {
     stdio_init_all();
@@ -50,6 +59,10 @@ int main() {
 
     int state = 0;
 
+    //for strin message (pt. 3)
+    int i = 15;
+    char message[50];
+
     while (1) {
         //blink pico led 
         state = !state;
@@ -61,17 +74,22 @@ int main() {
         //ssd1306_update();
 
         //-----draw character (pt. 2)-----
-        ssd1306_clear();
-        drawChar(10, 10, 'A');
-        ssd1306_update();
+        //ssd1306_clear();
+        //drawChar(10, 10, 'A');
+        //ssd1306_update();
+        //sleep_ms(500);
+        //gpio_put(25, 0);
+        //ssd1306_clear();
+        //ssd1306_update();
 
+        //-----draw string (pt. 3)-----
+        sprintf(message, "Hello %d", i);  // create message with changing number
+        ssd1306_clear();
+        drawString(10, 10, message);  // draw the message on the OLED
+        ssd1306_update();
         sleep_ms(500);
-
         gpio_put(25, 0);
-
-        ssd1306_clear();
-        ssd1306_update();
-
+        
         sleep_ms(500);
     }
 }
