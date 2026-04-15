@@ -187,3 +187,31 @@ void read_imu(float *accel, float *gyro, float *temp) {
 }
 
 //----from HW4.c 
+
+//function to draw letter at (x,y) using the ASCII lookup table (pt. 2)
+void drawChar(unsigned char x, unsigned char y, char c) {
+    int letter = c - 0x20;   // convert ASCII character to font index
+
+    if (letter < 0 || letter > 95) {
+        return;   // ignore unsupported characters
+    }
+
+    for (int col = 0; col < 5; col++) { // each character is 5 columns wide
+        char column_data = ASCII[letter][col];  // get the column data for character
+
+        for (int row = 0; row < 8; row++) { // each column is 8 bits tall
+            int bit = (column_data >> row) & 0x01; //for pixel on/off
+            ssd1306_drawPixel(x + col, y + row, bit);
+        }
+    }
+}
+
+//function to draw string at (x,y) using drawChar (pt. 3)
+void drawString(unsigned char x, unsigned char y, char *message) {
+    int i = 0;
+
+    while (message[i] != '\0') {
+        drawChar(x + i * 6, y, message[i]);  // move right each letter
+        i++;
+    }
+}
