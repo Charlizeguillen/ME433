@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
+#include <stdlib.h>
 #include "pico/time.h"
 #include "ssd1306.h"
 #include "font.h"
@@ -38,17 +39,15 @@
 
 void init_imu();
 void read_imu(float *accel, float *gyro, float *temp);
+void drawChar(unsigned char x, unsigned char y, char c);
+void drawString(unsigned char x, unsigned char y, char *message);
+void drawLine(int x0, int y0, int x1, int y1, int color);
 
 
 int main()
 {
     stdio_init_all();
     sleep_ms(2000);
-
-    //for heatbeat led
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
-
 
     //setting up i2c for imu and oled
     i2c_init(I2C_PORT, 400000);
@@ -114,7 +113,7 @@ int main()
         ssd1306_drawPixel(x0, y0, 1);
         
         //draw line for tilt 
-        ssd1306_drawLine(x0, y0, x1, y1, 1);
+        drawLine(x0, y0, x1, y1, 1);
 
         //draw fps
         drawString(0, 0, fpsmsg);
@@ -213,5 +212,31 @@ void drawString(unsigned char x, unsigned char y, char *message) {
     while (message[i] != '\0') {
         drawChar(x + i * 6, y, message[i]);  // move right each letter
         i++;
+    }
+}
+
+
+//new function for line 
+void drawLine(int x0, int y0, int x1, int y1, int color) {
+    int dx = x1 - x0;
+    int dy = y1 - y0;
+
+    int steps;
+    if (abs(dx) > abs(dy)) {
+        steps = abs(dx);
+    } else {
+        steps = abs(dy);
+    }
+
+    float xinc = dx / (float)steps;
+    float yinc = dy / (float)steps;
+
+    float x = x0;
+    float y = y0;
+
+    for (int i = 0; i <= steps; i++) {
+        ssd1306_drawPixel((int)x, (int)y, color);
+        x += xinc;
+        y += yinc;
     }
 }
