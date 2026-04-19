@@ -32,6 +32,36 @@
 
 #include "usb_descriptors.h"
 
+#include <math.h>
+#include "pico/stdlib.h"
+#include "hardware/i2c.h"
+#include "hardware/gpio.h"
+
+
+//---Adding for IMU 
+// IMU setup
+#define I2C_PORT i2c0
+#define SDA_PIN 8
+#define SCL_PIN 9
+#define MPU_ADDR 0x68
+
+// IMU registers
+#define ACCEL_CONFIG 0x1C
+#define GYRO_CONFIG  0x1B
+#define PWR_MGMT_1   0x6B
+#define ACCEL_XOUT_H 0x3B
+
+// mode control
+#define MODE_BUTTON_PIN 16
+#define MODE_LED_PIN 15
+
+static bool remote_mode = false;       // 0 = IMU mouse, 1 = circle mode
+static bool last_button_state = true;  // using pull-up
+static float circle_t = 0.0f;
+
+void init_imu(void);
+void read_imu(float *accel, float *gyro, float *temp);
+
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
@@ -64,11 +94,29 @@ int main(void)
     board_init_after_tusb();
   }
 
+  // I2C init for MPU6050
+  i2c_init(I2C_PORT, 400000);
+  gpio_set_function(SDA_PIN, GPIO_FUNC_I2C);
+  gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
+  gpio_pull_up(SDA_PIN);
+  gpio_pull_up(SCL_PIN);
+
+  init_imu();
+
+  // mode button
+  gpio_init(MODE_BUTTON_PIN);
+  gpio_set_dir(MODE_BUTTON_PIN, GPIO_IN);
+  gpio_pull_up(MODE_BUTTON_PIN);
+
+  // mode LED
+  gpio_init(MODE_LED_PIN);
+  gpio_set_dir(MODE_LED_PIN, GPIO_OUT);
+  gpio_put(MODE_LED_PIN, 0);
+
   while (1)
   {
     tud_task(); // tinyusb device task
     led_blinking_task();
-
     hid_task();
   }
 }
@@ -139,9 +187,58 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
     case REPORT_ID_MOUSE:
     {
       int8_t const delta = 5;
+      int8_t dx = 0;
+      int8_t dy = 0;
+
+     // read toggle button
+      bool current_button_state = gpio_get(MODE_BUTTON_PIN);
+
+      // toggle mode on button press (falling edge)
+      if (last_button_state == true && current_button_state == false)
+      {
+        remote_mode = !remote_mode;
+      }
+      last_button_state = current_button_state;
+
+      // led shows current mode (off = IMU mode, on = circle mode)
+      gpio_put(MODE_LED_PIN, remote_mode ? 1 : 0);
+
+      if (!remote_mode)
+      {
+        // -------- IMU mouse mode --------
+        float accel[3];
+        float gyro[3];
+        float temp;
+
+        read_imu(accel, gyro, &temp);
+
+        // accel[0] = X accel, accel[1] = Y accel from your code
+        // use a few discrete speed levels
+        if (accel[0] > 0.5f) dx = 5;
+        else if (accel[0] > 0.2f) dx = 2;
+        else if (accel[0] < -0.5f) dx = -5;
+        else if (accel[0] < -0.2f) dx = -2;
+        else dx = 0;
+
+        // screen Y usually feels better inverted
+        if (accel[1] > 0.5f) dy = -5;
+        else if (accel[1] > 0.2f) dy = -2;
+        else if (accel[1] < -0.5f) dy = 5;
+        else if (accel[1] < -0.2f) dy = 2;
+        else dy = 0;
+      }
+      else
+      {
+      // -------- circle mode --------
+        dx = (int8_t)(3.0f * cosf(circle_t));
+        dy = (int8_t)(3.0f * sinf(circle_t));
+        circle_t += 0.08f;
+        if (circle_t > 6.28318f) circle_t = 0.0f;
+      }
 
       // no button, right + down, no scroll, no pan
-      tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, delta, delta, 0, 0);
+      //tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, delta, delta, 0, 0);
+      tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, dx, dy, 0, 0);
     }
     break;
 
@@ -209,18 +306,20 @@ void hid_task(void)
   if ( board_millis() - start_ms < interval_ms) return; // not enough time
   start_ms += interval_ms;
 
-  uint32_t const btn = board_button_read();
+  //uint32_t const btn = board_button_read();
 
   // Remote wakeup
-  if ( tud_suspended() && btn )
+  //if ( tud_suspended() && btn )
+  if ( tud_suspended())
   {
     // Wake up host if we are in suspend mode
     // and REMOTE_WAKEUP feature is enabled by host
     tud_remote_wakeup();
   }else
-  {
+  {   
     // Send the 1st of report chain, the rest will be sent by tud_hid_report_complete_cb()
-    send_hid_report(REPORT_ID_KEYBOARD, btn);
+    //send_hid_report(REPORT_ID_MOUSE, btn);
+    send_hid_report(REPORT_ID_MOUSE, 0);
   }
 }
 
@@ -303,4 +402,53 @@ void led_blinking_task(void)
 
   board_led_write(led_state);
   led_state = 1 - led_state; // toggle
+}
+
+
+//----adding for IMU functions from HW5 ----
+void init_imu(void) {
+    uint8_t buf[2];
+
+    // turn on IMU
+    buf[0] = PWR_MGMT_1;
+    buf[1] = 0x00;
+    i2c_write_blocking(i2c0, 0x68, buf, 2, false);
+
+    // Set accelerometer to +/-2g
+    buf[0] = ACCEL_CONFIG;
+    buf[1] = 0x00;
+    i2c_write_blocking(i2c0, 0x68, buf, 2, false);
+
+    // Set gyro to +/-2000 dps
+    buf[0] = GYRO_CONFIG;
+    buf[1] = 0x18;
+    i2c_write_blocking(i2c0, 0x68, buf, 2, false);
+}
+
+void read_imu(float *accel, float *gyro, float *temp) {
+    uint8_t reg = ACCEL_XOUT_H;
+    uint8_t data[14];
+
+    i2c_write_blocking(i2c0, 0x68, &reg, 1, true);
+    i2c_read_blocking(i2c0, 0x68, data, 14, false);
+
+    int16_t ax = (data[0] << 8) | data[1];
+    int16_t ay = (data[2] << 8) | data[3];
+    int16_t az = (data[4] << 8) | data[5];
+
+    int16_t gx = (data[8] << 8) | data[9];
+    int16_t gy = (data[10] << 8) | data[11];
+    int16_t gz = (data[12] << 8) | data[13];
+
+    int16_t temp_raw = (data[6] << 8) | data[7];
+
+    accel[0] = ax * 0.000061f;
+    accel[1] = ay * 0.000061f;
+    accel[2] = az * 0.000061f;
+
+    gyro[0] = gx * 0.00763f;
+    gyro[1] = gy * 0.00763f;
+    gyro[2] = gz * 0.00763f;
+
+    *temp = temp_raw / 340.0f + 36.53f;
 }
