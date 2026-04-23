@@ -12,7 +12,7 @@
 
 static inline void cs_select(uint cs_pin);
 static inline void cs_deselect(uint cs_pin);
-void writeDAC(int channel, float voltage);
+void writeDac(int channel, float voltage);
 
 int main()
 {
@@ -79,7 +79,7 @@ void writeDac(int channel, float voltage) {
     if (voltage < 0) voltage = 0;
     if (voltage > 3.3) voltage = 3.3;
     
-    uint16_t data[2];
+    uint8_t data[2];
 
     //converting the voltage to a 10-bit value
     uint16_t theV= (uint16_t)((voltage / 3.3f) * 1023); // 0b11111111111 is 1023 in decimal, which is the maximum value for a 10-bit DAC
@@ -96,9 +96,3 @@ void writeDac(int channel, float voltage) {
     spi_write_blocking(SPI_PORT, data, 2); // where data is a uint8_t array with length len
     cs_deselect(PIN_CS);
 }
-
-
-///osciloscope 
-//pointy end to board and alligator clip (or back probe) to gnd 
-//voltage and time sensitvity 
-//turn on takes ~2min 
