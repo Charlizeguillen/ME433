@@ -7,7 +7,7 @@ import numpy as np
 #s = 4.0 * np.sin(2 * np.pi * 100 * t) + 0.25 * np.sin(2 * np.pi * 1000 * t) + 25
 
 #gatting data from file
-filename = 'sigC.csv' #change file name for other signals
+filename = 'sigC.csv' #change file 
 
 #for moving average filter
 #X= 10 
@@ -16,7 +16,7 @@ filename = 'sigC.csv' #change file name for other signals
 A = 0.9
 B = 0.1
 
-data = np.genfromtxt(filename, delimiter=',')  #change file name for other signals
+data = np.genfromtxt(filename, delimiter=',')  
 t= data[:,0]
 s= data[:,1]
 Fs= len(t)/t[-1] # sample rate 
