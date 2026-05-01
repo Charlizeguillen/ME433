@@ -114,7 +114,7 @@ int main()
         
         //draw line for tilt 
         drawLine(x0, y0, x1, y1, 1);
-
+        
         //draw fps
         drawString(0, 0, fpsmsg);
 
