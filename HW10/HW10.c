@@ -52,9 +52,9 @@ int main()
         read_imu(accel, gyro, &temp);
 
         // Send only X and Y acceleration to the computer
-        printf("%.3f,%.3f\n", accel[0], accel[1]);
+        printf("%.3f,%.3f\n", -accel[0], -accel[1]);
 
-        sleep_ms(20); // about 50 Hz
+        sleep_ms(30); // about 50 Hz
     }
 }
 
