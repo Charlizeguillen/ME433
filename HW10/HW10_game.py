@@ -11,7 +11,7 @@ airplane.x = WIDTH / 2
 airplane.y = HEIGHT - 80
 
 # change this to your Pico port
-ser = serial.Serial("/dev/tty.usbmodem101", 115200, timeout=0.01)
+ser = serial.Serial("/dev/tty.usbmodem1101", 115200, timeout=0.01)
 
 ax = 0
 ay = 0
