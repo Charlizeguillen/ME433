@@ -25,3 +25,43 @@
 2026-05-10 20:14:42,327 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] use arm architecture
 2026-05-10 20:14:42,327 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] Architecture: Apple Silicon (ARM64)
 2026-05-10 20:15:31,010 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 
+2026-05-10 21:33:19,166 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] java.io.IOException: Operation timed out
+2026-05-10 21:33:19,166 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/java.io.FileOutputStream.writeBytes(Native Method)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/java.io.FileOutputStream.write(FileOutputStream.java:367)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/sun.nio.cs.StreamEncoder.writeBytes(StreamEncoder.java:309)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/sun.nio.cs.StreamEncoder.implFlushBuffer(StreamEncoder.java:405)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/sun.nio.cs.StreamEncoder.implFlush(StreamEncoder.java:410)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/sun.nio.cs.StreamEncoder.lockedFlush(StreamEncoder.java:214)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/sun.nio.cs.StreamEncoder.flush(StreamEncoder.java:201)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/java.io.OutputStreamWriter.flush(OutputStreamWriter.java:262)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/java.io.BufferedWriter.implFlush(BufferedWriter.java:372)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/java.io.BufferedWriter.flush(BufferedWriter.java:359)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.core.CDTLogWriter.closeLogFile(CDTLogWriter.java:68)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.cdt.internal.core.CDTLogWriter.shutdown(CDTLogWriter.java:136)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.cdt.core.CCorePlugin.stop(CCorePlugin.java:379)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.internal.framework.BundleContextImpl$3.run(BundleContextImpl.java:903)
+2026-05-10 21:33:19,167 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.internal.framework.BundleContextImpl$3.run(BundleContextImpl.java:1)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/java.security.AccessController.doPrivileged(AccessController.java:571)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.internal.framework.BundleContextImpl.stop(BundleContextImpl.java:895)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.internal.framework.EquinoxBundle.stopWorker0(EquinoxBundle.java:1071)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.internal.framework.EquinoxBundle$EquinoxModule.stopWorker(EquinoxBundle.java:392)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.container.Module.doStop(Module.java:695)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.container.Module.stop(Module.java:554)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.decStartLevel(ModuleContainer.java:2116)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.doContainerStartLevel(ModuleContainer.java:1986)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.container.SystemModule.stopWorker(SystemModule.java:281)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.internal.framework.EquinoxBundle$SystemBundle$EquinoxSystemModule.stopWorker(EquinoxBundle.java:222)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.container.Module.doStop(Module.java:695)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.container.Module.stop(Module.java:554)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.container.SystemModule.stop(SystemModule.java:212)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at org.eclipse.osgi.internal.framework.EquinoxBundle$SystemBundle$EquinoxSystemModule$1.run(EquinoxBundle.java:240)
+2026-05-10 21:33:19,168 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-05-10 21:33:32,422 [INFO] Activator:176 - 
+
+
+2026-05-10 21:33:32,423 [INFO] Activator:177 - !SESSION log4j initialized
+2026-05-10 21:33:34,954 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] 
+2026-05-10 21:33:35,084 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] Start the detection of the machine's architecture
+2026-05-10 21:33:35,092 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] use arm architecture
+2026-05-10 21:33:35,092 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] Architecture: Apple Silicon (ARM64)
+2026-05-10 21:33:43,423 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 
