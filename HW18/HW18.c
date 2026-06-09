@@ -133,8 +133,8 @@ int main() {
         if (x > 1.0f) x = 1.0f;
         if (x < -1.0f) x = -1.0f;
 
-        float K = 0.25f;
-        float u = -K * x;
+        float K = 0.3f;
+        float u = K * x;
 
         set_motor(u);
 
@@ -143,3 +143,4 @@ int main() {
         
     }
 }
+
